@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aman Patel — Customer Analytics & BI</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:     #0D0D0D;
+      --paper:   #F7F5F0;
+      --mid:     #6B6B6B;
+      --rule:    #D8D4CC;
+      --accent:  #1A4FFF;
+      --card-bg: #FFFFFF;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 4rem;
+      background: rgba(247,245,240,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--mid); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--ink); }
+
+    .hero {
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; padding: 8rem 4rem 4rem; gap: 4rem;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .hero-name { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.2rem; }
+    .hero-name em { font-style: italic; color: var(--accent); }
+    .hero-sub { font-size: 1.05rem; color: var(--mid); max-width: 440px; margin-bottom: 2.5rem; line-height: 1.75; }
+    .hero-cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; }
+    .btn { padding: 0.75rem 1.75rem; font-size: 0.88rem; font-weight: 600; border-radius: 4px; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; letter-spacing: 0.02em; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #0036cc; }
+    .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+    .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--rule); border-radius: 8px; padding: 1.5rem; }
+    .stat-card.highlight { background: var(--accent); border-color: var(--accent); }
+    .stat-number { font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1; margin-bottom: 0.4rem; color: var(--ink); }
+    .stat-number span { color: var(--accent); }
+    .stat-card.highlight .stat-number { color: #fff; }
+    .stat-card.highlight .stat-number span { color: rgba(255,255,255,0.6); }
+    .stat-label { font-size: 0.8rem; color: var(--mid); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-card.highlight .stat-label { color: rgba(255,255,255,0.8); }
+
+    section { padding: 6rem 4rem; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3vw, 2.8rem); letter-spacing: -0.02em; margin-bottom: 3rem; }
+    hr.rule { border: none; border-top: 1px solid var(--rule); margin-bottom: 3rem; }
+
+    .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 5rem; align-items: start; }
+    .about-body { font-size: 1.05rem; color: #444; line-height: 1.85; }
+    .about-body p + p { margin-top: 1.2rem; }
+    .edu-list { list-style: none; }
+    .edu-item { padding: 1.2rem 0; border-bottom: 1px solid var(--rule); }
+    .edu-item:first-child { border-top: 1px solid var(--rule); }
+    .edu-degree { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .edu-school { color: var(--mid); font-size: 0.88rem; }
+    .edu-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); margin-top: 0.3rem; }
+
+    /* PROJECTS */
+    .projects-bg { background: var(--ink); }
+    .projects-bg .section-label { color: #7B9FFF; }
+    .projects-bg .section-title { color: #fff; }
+    .projects-bg hr.rule { border-color: #2a2a2a; }
+    .projects-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .project-card { background: #161616; border: 1px solid #2a2a2a; border-radius: 8px; padding: 2rem; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+    .project-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .project-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #555; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .project-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: #fff; margin-bottom: 0.75rem; line-height: 1.2; }
+    .project-desc { font-size: 0.88rem; color: #999; line-height: 1.7; margin-bottom: 1.5rem; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag { font-size: 0.72rem; font-weight: 500; padding: 0.3rem 0.75rem; border-radius: 100px; background: #222; color: #7B9FFF; border: 1px solid #333; }
+    .project-impact { margin-top: 1.25rem; padding: 0.9rem 1rem; background: #1e1e1e; border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; }
+    .project-impact-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .project-impact-value { font-size: 0.85rem; color: #7B9FFF; font-weight: 500; }
+
+    .skills-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .skill-group { background: var(--card-bg); border: 1px solid var(--rule); border-radius: 8px; padding: 1.5rem; }
+    .skill-group-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
+    .skill-list { list-style: none; }
+    .skill-item { font-size: 0.88rem; padding: 0.35rem 0; color: var(--ink); border-bottom: 1px solid #f0ede7; }
+    .skill-item:last-child { border-bottom: none; }
+
+    .exp-item { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; padding: 2.5rem 0; border-bottom: 1px solid var(--rule); }
+    .exp-item:first-child { border-top: 1px solid var(--rule); }
+    .exp-period { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--mid); line-height: 1.6; padding-top: 0.15rem; }
+    .exp-company { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+    .exp-role { font-size: 0.88rem; color: var(--accent); font-weight: 500; margin-bottom: 0.75rem; }
+    .exp-bullets { list-style: none; }
+    .exp-bullets li { font-size: 0.9rem; color: #555; line-height: 1.7; padding: 0.25rem 0 0.25rem 1.1rem; position: relative; }
+    .exp-bullets li::before { content: '—'; position: absolute; left: 0; color: var(--rule); }
+
+    .contact-bg { background: var(--accent); }
+    .contact-bg .section-label { color: rgba(255,255,255,0.6); }
+    .contact-bg .section-title { color: #fff; }
+    .contact-bg hr.rule { border-color: rgba(255,255,255,0.2); }
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .contact-desc { font-size: 1.1rem; color: rgba(255,255,255,0.85); line-height: 1.8; }
+    .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-link { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; background: rgba(255,255,255,0.12); border-radius: 6px; text-decoration: none; color: #fff; font-weight: 500; font-size: 0.92rem; transition: background 0.2s; }
+    .contact-link:hover { background: rgba(255,255,255,0.22); }
+    .contact-link-icon { font-size: 1.1rem; width: 24px; text-align: center; }
+
+    /* PROJECT MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; align-items: center; justify-content: center; padding: 2rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 2.5rem; position: relative; }
+    .modal-close { position: absolute; top: 1.25rem; right: 1.5rem; background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: #fff; margin-bottom: 0.5rem; }
+    .modal-subtitle { font-size: 0.85rem; color: #7B9FFF; font-weight: 500; margin-bottom: 1.5rem; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em; }
+    .modal-section-head { font-size: 0.72rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace; margin: 1.5rem 0 0.75rem; }
+    .modal-body { font-size: 0.92rem; color: #aaa; line-height: 1.8; }
+    .modal-bullets { list-style: none; }
+    .modal-bullets li { font-size: 0.9rem; color: #aaa; line-height: 1.7; padding: 0.3rem 0 0.3rem 1.1rem; position: relative; }
+    .modal-bullets li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+    .modal-metric { display: inline-block; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; padding: 0.75rem 1.25rem; margin: 0.4rem 0.4rem 0 0; }
+    .modal-metric-num { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: #fff; line-height: 1; }
+    .modal-metric-label { font-size: 0.72rem; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+
+    footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--mid); border-top: 1px solid var(--rule); }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; gap: 2.5rem; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .modal { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Aman Patel.</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text reveal">
+    <p class="hero-eyebrow">Sr. Analyst · Customer Planning & Insights</p>
+    <h1 class="hero-name">From raw data<br>to <em>customer clarity.</em></h1>
+    <p class="hero-sub">I'm Aman Patel — a BI & Customer Analytics professional with 5+ years turning complex datasets into executive-ready insights across American Express, Reebok, and Nidec.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-stats reveal">
+    <div class="stat-card highlight">
+      <div class="stat-number">$50B<span>+</span></div>
+      <div class="stat-label">Transactions Analysed at AmEx</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">5<span>+ yrs</span></div>
+      <div class="stat-label">BI & Analytics Experience</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">70<span>%</span></div>
+      <div class="stat-label">Manual Reporting Eliminated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">15<span>+</span></div>
+      <div class="stat-label">Executive Dashboards Shipped</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <p class="section-label reveal">About Me</p>
+    <h2 class="section-title reveal">Background & Education</h2>
+    <hr class="rule">
+    <div class="about-grid">
+      <div class="about-body reveal">
+        <p>I'm a Senior BI & Customer Analytics Analyst specialising in customer segmentation, lifetime value analytics, CRM strategy, and campaign incrementality testing. My work connects customer behaviour data to real business decisions — from acquisition and activation to loyalty and retention.</p>
+        <p>I've delivered insights across $50B+ in consumer credit card transactions at American Express, built performance analytics for Reebok's retail and digital channels, and automated enterprise reporting at Nidec Motor Corporation — always partnering cross-functionally with Finance, Marketing, and CRM teams.</p>
+        <p>Currently a BI Data Analyst at Syracuse University, and actively targeting Senior Analyst, Customer Planning & Insights roles where I can drive customer strategy at scale.</p>
+      </div>
+      <div class="reveal">
+        <ul class="edu-list">
+          <li class="edu-item">
+            <div class="edu-degree">MBA — Business Analytics & Supply Chain</div>
+            <div class="edu-school">Syracuse University, Whitman School of Management</div>
+            <div class="edu-meta">Aug 2022 – May 2024 · Syracuse, NY</div>
+          </li>
+          <li class="edu-item">
+            <div class="edu-degree">B.E. — Petroleum Engineering</div>
+            <div class="edu-school">Savitribai Phule Pune University</div>
+            <div class="edu-meta">July 2015 – May 2019 · Pune, India</div>
+          </li>
+        </ul>
+        <div style="margin-top:2rem;">
+          <div class="section-label" style="margin-bottom:1rem;">Certifications</div>
+          <ul class="edu-list">
+            <li class="edu-item"><div class="edu-degree">Project Management Professional (PMP)</div><div class="edu-school">Project Management Institute</div></li>
+            <li class="edu-item"><div class="edu-degree">Lean Six Sigma Black Belt</div><div class="edu-school">Council for Six Sigma Certification</div></li>
+            <li class="edu-item"><div class="edu-degree">Google Data Analytics Professional</div><div class="edu-school">Google</div></li>
+            <li class="edu-item"><div class="edu-degree">Alteryx Designer Core</div><div class="edu-school">Alteryx</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="projects-bg">
+  <div class="container">
+    <p class="section-label reveal">Selected Work</p>
+    <h2 class="section-title reveal">Projects <span style="font-family:Inter;font-size:0.9rem;color:#555;font-style:normal;"> — click any card to explore</span></h2>
+    <hr class="rule">
+    <div class="projects-grid">
+
+      <div class="project-card reveal" onclick="openModal('clv')">
+        <div class="project-num">01 · CUSTOMER SEGMENTATION</div>
+        <h3 class="project-title">Customer Lifetime Value Segmentation</h3>
+        <p class="project-desc">End-to-end CLV model across $50B+ in AmEx transactions, identifying high-value vs at-risk cohorts to inform acquisition investment strategy.</p>
+        <div class="project-tags"><span class="tag">SQL</span><span class="tag">Python</span><span class="tag">Tableau</span><span class="tag">Snowflake</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">Informed VP-level quarterly investment decisions</div></div>
+      </div>
+
+      <div class="project-card reveal" onclick="openModal('incrementality')">
+        <div class="project-num">02 · CAMPAIGN ANALYTICS</div>
+        <h3 class="project-title">Offer Incrementality & A/B Testing</h3>
+        <p class="project-desc">Designed and analysed A/B and incrementality tests evaluating promotional offer effectiveness at AmEx and Reebok to refine CRM targeting.</p>
+        <div class="project-tags"><span class="tag">A/B Testing</span><span class="tag">Python</span><span class="tag">SQL</span><span class="tag">Excel</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">+15% promotional ROI improvement at Reebok</div></div>
+      </div>
+
+      <div class="project-card reveal" onclick="openModal('dashboards')">
+        <div class="project-num">03 · EXECUTIVE DASHBOARDS</div>
+        <h3 class="project-title">BI Dashboard Suite — Syracuse University</h3>
+        <p class="project-desc">15+ Tableau dashboards for housing, dining, and financial KPIs integrated from Simphony POS, StarRez, and Safety systems via automated SQL pipelines.</p>
+        <div class="project-tags"><span class="tag">Tableau</span><span class="tag">SQL Server</span><span class="tag">SSMS</span><span class="tag">Power Query</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">40% efficiency gain · 60% less manual reporting</div></div>
+      </div>
+
+      <div class="project-card reveal" onclick="openModal('reebok')">
+        <div class="project-num">04 · RETAIL ANALYTICS</div>
+        <h3 class="project-title">Retail Channel & Inventory Analytics</h3>
+        <p class="project-desc">Customer file health, acquisition trends, and CLV analysis across Reebok's digital and in-store channels integrated into seasonal media planning.</p>
+        <div class="project-tags"><span class="tag">Power BI</span><span class="tag">SQL</span><span class="tag">Excel</span><span class="tag">Alteryx</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">Aligned customer strategy with supply chain & marketing</div></div>
+      </div>
+
+      <div class="project-card reveal" onclick="openModal('fraud')">
+        <div class="project-num">05 · RISK & FRAUD</div>
+        <h3 class="project-title">Credit Card Risk & Fraud KPI Scorecards</h3>
+        <p class="project-desc">SQL pipelines combining cardholder, merchant, and risk data at AmEx. KPI scorecards surfacing fraud exposure presented quarterly to VP stakeholders.</p>
+        <div class="project-tags"><span class="tag">SQL</span><span class="tag">Tableau</span><span class="tag">Power BI</span><span class="tag">Python</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">$15M in annual fraud/risk exposure identified</div></div>
+      </div>
+
+      <div class="project-card reveal" onclick="openModal('nidec')">
+        <div class="project-num">06 · MANUFACTURING OPS</div>
+        <h3 class="project-title">Global Manufacturing KPI Pipeline</h3>
+        <p class="project-desc">Consolidated SQL datasets across Nidec's global plants into a unified Tableau reporting system tracking production output, downtime, and efficiency.</p>
+        <div class="project-tags"><span class="tag">Tableau</span><span class="tag">SQL</span><span class="tag">Power Query</span><span class="tag">Alteryx</span></div>
+        <div class="project-impact"><div class="project-impact-label">Key Impact</div><div class="project-impact-value">70% manual Excel work eliminated</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <p class="section-label reveal">Capabilities</p>
+    <h2 class="section-title reveal">Technical Skills</h2>
+    <hr class="rule">
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">BI & Visualisation</div>
+        <ul class="skill-list">
+          <li class="skill-item">Tableau & Tableau Prep</li>
+          <li class="skill-item">Power BI</li>
+          <li class="skill-item">Alteryx</li>
+          <li class="skill-item">Adobe Analytics</li>
+        </ul>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Databases & ETL</div>
+        <ul class="skill-list">
+          <li class="skill-item">SQL Server / SSMS</li>
+          <li class="skill-item">Snowflake</li>
+          <li class="skill-item">Excel Power Query</li>
+          <li class="skill-item">Advanced Excel</li>
+        </ul>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Analytics & Testing</div>
+        <ul class="skill-list">
+          <li class="skill-item">Customer Segmentation</li>
+          <li class="skill-item">Lifetime Value (CLV)</li>
+          <li class="skill-item">A/B & Incrementality Testing</li>
+          <li class="skill-item">Forecasting & Trend Analysis</li>
+          <li class="skill-item">KPI Scorecards</li>
+        </ul>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Programming & Other</div>
+        <ul class="skill-list">
+          <li class="skill-item">Python (Pandas, NumPy)</li>
+          <li class="skill-item">R (basic)</li>
+          <li class="skill-item">Agile / Scrum</li>
+          <li class="skill-item">Stakeholder Workshops</li>
+          <li class="skill-item">GitHub</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <p class="section-label reveal">Career</p>
+    <h2 class="section-title reveal">Work Experience</h2>
+    <hr class="rule">
+    <div class="exp-item reveal">
+      <div class="exp-period">July 2024<br>Present</div>
+      <div>
+        <div class="exp-company">Syracuse University</div>
+        <div class="exp-role">Business Intelligence Data Analyst · New York, NY</div>
+        <ul class="exp-bullets">
+          <li>Developed 15+ Tableau dashboards for housing, dining, and financial reporting, improving executive decision-making efficiency by 40%.</li>
+          <li>Built SQL pipelines integrating Simphony POS, StarRez, and Safety systems for real-time KPI monitoring.</li>
+          <li>Automated meal plan and occupancy reports, reducing manual reporting time by 60%.</li>
+          <li>Partnered with leadership to create KPI scorecards improving enrollment and retention tracking.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item reveal">
+      <div class="exp-period">May 2023<br>May 2024</div>
+      <div>
+        <div class="exp-company">Nidec Motor Corporation</div>
+        <div class="exp-role">Data Analytics Consultant · Remote</div>
+        <ul class="exp-bullets">
+          <li>Designed Tableau dashboards monitoring global manufacturing KPIs: production output, downtime, and efficiency.</li>
+          <li>Consolidated SQL datasets across multiple plants into a unified reporting system enabling enterprise-wide visibility.</li>
+          <li>Eliminated 70% of manual Excel work, accelerating cross-functional decision-making for senior leadership.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item reveal">
+      <div class="exp-period">Aug 2022<br>May 2023</div>
+      <div>
+        <div class="exp-company">Reebok</div>
+        <div class="exp-role">Retail Analytics Consultant · Remote</div>
+        <ul class="exp-bullets">
+          <li>Designed Power BI dashboards tracking sales and inventory performance across regions.</li>
+          <li>Analysed campaign effectiveness, providing recommendations that improved promotional ROI by 15%.</li>
+          <li>Delivered customer segmentation and lifetime value analytics supporting seasonal forecasting.</li>
+          <li>Collaborated with marketing and supply chain teams to align customer strategy with seasonal goals.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item reveal">
+      <div class="exp-period">May 2019<br>Aug 2022</div>
+      <div>
+        <div class="exp-company">American Express</div>
+        <div class="exp-role">Business Intelligence Analyst · New York, NY</div>
+        <ul class="exp-bullets">
+          <li>Delivered customer segmentation, CLV analytics, and file health reporting across $50B+ in credit card transactions.</li>
+          <li>Engineered SQL pipelines combining cardholder, merchant, and risk data — reducing manual reporting by 70%.</li>
+          <li>Designed KPI scorecards with Risk & Finance teams, uncovering $15M in annual fraud/risk exposure savings.</li>
+          <li>Supported incrementality testing and post-campaign analysis to refine CRM offer selection and targeting.</li>
+          <li>Presented executive dashboards to VP-level stakeholders for quarterly investment planning.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-bg">
+  <div class="container">
+    <p class="section-label reveal">Let's Talk</p>
+    <h2 class="section-title reveal">Get in Touch</h2>
+    <hr class="rule">
+    <div class="contact-inner">
+      <p class="contact-desc reveal">
+        Actively exploring <strong>Senior Analyst, Customer Planning & Insights</strong> roles where I can drive customer segmentation, CRM strategy, and campaign analytics at scale. PMP certified. MBA. 5+ years of proven impact.
+      </p>
+      <div class="contact-links reveal">
+        <a href="mailto:amanpatel028@gmail.com" class="contact-link">
+          <span class="contact-link-icon">✉</span> amanpatel028@gmail.com
+        </a>
+        <a href="https://linkedin.com/in/amanpatel028" target="_blank" class="contact-link">
+          <span class="contact-link-icon">in</span> linkedin.com/in/amanpatel028
+        </a>
+        <a href="https://github.com/aman-analytics" target="_blank" class="contact-link">
+          <span class="contact-link-icon">⌥</span> github.com/aman-analytics
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><p>Aman Patel · Built with HTML · Hosted on GitHub Pages · © 2026</p></footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const projects = {
+  clv: {
+    num: '01 · CUSTOMER SEGMENTATION',
+    title: 'Customer Lifetime Value Segmentation',
+    subtitle: 'American Express · 2019–2022',
+    tags: ['SQL','Python','Tableau','Snowflake','Pandas'],
+    overview: 'Built an end-to-end Customer Lifetime Value (CLV) segmentation framework across $50B+ in American Express consumer credit card transactions. The goal was to move beyond simple spend tiers and create a multi-dimensional view of customer value that integrated acquisition cost, activation speed, rewards redemption behaviour, and projected forward spend.',
+    approach: [
+      'Pulled and joined cardholder, transaction, and rewards data using SQL across Snowflake and Teradata environments',
+      'Engineered features: recency, frequency, average spend, rewards redemption rate, activation lag, and channel of acquisition',
+      'Applied K-means clustering in Python (scikit-learn) to segment customers into 5 value tiers',
+      'Built Tableau dashboards with drill-downs by segment, region, card product, and acquisition cohort',
+      'Partnered with Finance and CRM teams to map segments to investment thresholds and offer eligibility rules'
+    ],
+    metrics: [{ num: '$50B+', label: 'Transactions Analysed' }, { num: '5', label: 'Customer Segments' }, { num: 'VP', label: 'Stakeholder Level' }],
+    outcome: 'Segmentation output was adopted into quarterly investment planning, directly informing how acquisition budgets were allocated across card products and customer tiers.'
+  },
+  incrementality: {
+    num: '02 · CAMPAIGN ANALYTICS',
+    title: 'Offer Incrementality & A/B Testing',
+    subtitle: 'American Express & Reebok · 2019–2023',
+    tags: ['A/B Testing','Incrementality','Python','SQL','Excel','CRM'],
+    overview: 'Designed and analysed incrementality tests and A/B experiments to measure the true causal lift of promotional offers — distinguishing customers who would have purchased anyway from those genuinely influenced by the campaign.',
+    approach: [
+      'Designed test and holdout groups using stratified random sampling to ensure comparable baseline behaviour',
+      'Defined incrementality metrics: incremental revenue, incremental activations, cost per incremental unit',
+      'Built post-campaign analysis templates in Python and Excel tracking lift vs control across offer types',
+      'Collaborated with CRM and marketing teams to refine targeting criteria based on test learnings',
+      'Delivered findings in executive-ready slide decks with clear investment recommendations'
+    ],
+    metrics: [{ num: '+15%', label: 'Promo ROI Lift (Reebok)' }, { num: 'A/B+', label: 'Holdout Testing' }, { num: 'CRM', label: 'Strategy Refined' }],
+    outcome: 'Test findings directly shaped CRM offer selection strategy at both AmEx and Reebok, improving targeting precision and promotional ROI by 15% at Reebok.'
+  },
+  dashboards: {
+    num: '03 · EXECUTIVE DASHBOARDS',
+    title: 'BI Dashboard Suite — Syracuse University',
+    subtitle: 'Syracuse University · July 2024–Present',
+    tags: ['Tableau','SQL Server','SSMS','Power Query','KPI Scorecards'],
+    overview: 'Designed and built a suite of 15+ Tableau dashboards for Syracuse University covering housing occupancy, dining meal plan consumption, financial reporting, and safety KPIs — consolidating data from three separate operational systems into a unified analytics layer.',
+    approach: [
+      'Built SQL pipelines in SSMS integrating Simphony POS (dining), StarRez (housing), and Safety systems',
+      'Automated daily data refreshes replacing manual Excel extracts, reducing reporting time by 60%',
+      'Designed KPI scorecards with enrollment, retention, occupancy, and revenue metrics for senior leadership',
+      'Created drill-through dashboards allowing directors to self-serve by building, semester cohort, or meal plan type',
+      'Facilitated stakeholder workshops to define KPI definitions and reporting cadence across Finance and Operations'
+    ],
+    metrics: [{ num: '15+', label: 'Dashboards Built' }, { num: '40%', label: 'Decision Efficiency Gain' }, { num: '60%', label: 'Manual Work Reduced' }],
+    outcome: 'Dashboards are now used weekly by VP and Director-level leadership across Housing, Dining, Finance, and Operations for real-time operational decision-making.'
+  },
+  reebok: {
+    num: '04 · RETAIL ANALYTICS',
+    title: 'Retail Channel & Inventory Analytics',
+    subtitle: 'Reebok · Aug 2022–May 2023',
+    tags: ['Power BI','SQL','Excel','Alteryx','CLV','Forecasting'],
+    overview: 'Delivered a comprehensive retail analytics programme for Reebok covering customer file health, acquisition trend analysis, lifetime value modelling, and seasonal demand forecasting across digital and in-store channels.',
+    approach: [
+      'Analysed customer acquisition trends across direct, wholesale, and e-commerce channels using SQL and Alteryx',
+      'Built CLV models segmenting customers by channel-of-first-purchase and seasonal cohort',
+      'Designed Power BI dashboards tracking product performance, sell-through rates, and regional inventory levels',
+      'Supported incrementality testing on promotional campaigns, delivering post-campaign ROI reports',
+      'Integrated customer insights into media planning and supply chain discussions for seasonal go-to-market strategy'
+    ],
+    metrics: [{ num: '+15%', label: 'Promotional ROI' }, { num: 'Multi', label: 'Channel Coverage' }, { num: 'S&OP', label: 'Planning Integrated' }],
+    outcome: 'Customer and channel insights were embedded into Reebok\'s seasonal planning process, improving media targeting efficiency and aligning inventory levels with demand forecasts.'
+  },
+  fraud: {
+    num: '05 · RISK & FRAUD',
+    title: 'Credit Card Risk & Fraud KPI Scorecards',
+    subtitle: 'American Express · 2019–2022',
+    tags: ['SQL','Tableau','Power BI','Python','Risk Analytics'],
+    overview: 'Built enterprise-level SQL data pipelines and KPI scorecards at American Express to surface fraud exposure and credit risk trends across the consumer card portfolio — supporting $15M+ in annual risk mitigation decisions.',
+    approach: [
+      'Engineered SQL pipelines joining cardholder profiles, merchant transaction data, and risk model outputs across Teradata',
+      'Designed KPI scorecards tracking fraud rate by card product, merchant category, geography, and acquisition cohort',
+      'Built Tableau and Power BI dashboards with anomaly detection views flagging unusual spend patterns',
+      'Partnered with Risk and Finance teams to define thresholds, escalation triggers, and reserve calculations',
+      'Presented findings and quarterly risk exposure summaries to VP-level leadership'
+    ],
+    metrics: [{ num: '$15M', label: 'Risk Exposure Identified' }, { num: '70%', label: 'Manual Reporting Reduced' }, { num: 'VP', label: 'Quarterly Reporting' }],
+    outcome: 'Scorecards became the primary risk monitoring tool for VP-level quarterly reviews, directly informing credit policy adjustments and fraud intervention strategies.'
+  },
+  nidec: {
+    num: '06 · MANUFACTURING OPS',
+    title: 'Global Manufacturing KPI Pipeline',
+    subtitle: 'Nidec Motor Corporation · May 2023–May 2024',
+    tags: ['Tableau','SQL','Power Query','Alteryx','Operations'],
+    overview: 'Built a unified analytics infrastructure for Nidec Motor Corporation consolidating KPI data from multiple global manufacturing plants into a single Tableau reporting layer — replacing a fragmented system of manual Excel reports.',
+    approach: [
+      'Audited existing plant-level reporting to identify data source inconsistencies and manual process bottlenecks',
+      'Built SQL pipelines consolidating production output, downtime events, and efficiency metrics across plants',
+      'Used Alteryx to automate data preparation and transformation workflows previously done manually in Excel',
+      'Designed a unified Tableau dashboard with plant-level drill-downs, trend lines, and anomaly flags',
+      'Delivered training sessions to operations and analytics teams on self-service dashboard use'
+    ],
+    metrics: [{ num: '70%', label: 'Manual Work Eliminated' }, { num: 'Global', label: 'Multi-Plant Coverage' }, { num: 'Real-time', label: 'KPI Monitoring' }],
+    outcome: 'Senior leadership gained a single source of truth for global manufacturing performance, enabling faster cross-plant comparisons and accelerating operational decision-making.'
+  }
+};
+
+function openModal(id) {
+  const p = projects[id];
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-subtitle">${p.num}</div>
+    <h2 class="modal-title">${p.title}</h2>
+    <div style="font-size:0.82rem;color:#666;margin-bottom:1.25rem;font-family:'JetBrains Mono',monospace;">${p.subtitle}</div>
+    <div class="modal-tag-row">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <div class="modal-section-head">Overview</div>
+    <p class="modal-body">${p.overview}</p>
+    <div class="modal-section-head">Approach</div>
+    <ul class="modal-bullets">${p.approach.map(a=>`<li>${a}</li>`).join('')}</ul>
+    <div class="modal-section-head">Key Metrics</div>
+    <div>${p.metrics.map(m=>`<div class="modal-metric"><div class="modal-metric-num">${m.num}</div><div class="modal-metric-label">${m.label}</div></div>`).join('')}</div>
+    <div class="modal-section-head">Outcome</div>
+    <p class="modal-body">${p.outcome}</p>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
