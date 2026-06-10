@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aman Patel — Customer Analytics & BI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #F2EDE4;
+      --bg2:       #EBE4D8;
+      --ink:       #1C1917;
+      --ink2:      #57534E;
+      --rule:      #D6CFC3;
+      --terracotta:#C1440E;
+      --terra-lt:  #F5D5C8;
+      --slate:     #2D3B4E;
+      --slate-lt:  #D0D8E4;
+      --cream:     #FAF8F4;
+      --card:      #FFFFFF;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5rem;
+      background: rgba(242,237,228,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--ink2); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--terracotta); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; padding: 9rem 5rem 5rem;
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 6rem; align-items: center;
+    }
+    .hero-kicker {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+      color: var(--terracotta); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-kicker::before { content:''; width:28px; height:1px; background:var(--terracotta); }
+    .hero-name {
+      font-family: 'Fraunces', serif; font-size: clamp(3rem, 5.5vw, 5.2rem);
+      font-weight: 300; line-height: 1.0; letter-spacing: -0.03em;
+      color: var(--ink); margin-bottom: 1.5rem;
+    }
+    .hero-name strong { font-weight: 600; font-style: italic; color: var(--terracotta); }
+    .hero-sub { font-size: 1rem; color: var(--ink2); max-width: 480px; line-height: 1.8; margin-bottom: 2.5rem; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn { padding: 0.8rem 2rem; font-size: 0.85rem; font-weight: 500; border-radius: 2px; text-decoration: none; transition: all 0.2s; display: inline-block; letter-spacing: 0.04em; }
+    .btn-solid { background: var(--slate); color: #fff; }
+    .btn-solid:hover { background: var(--ink); }
+    .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+    .btn-ghost:hover { background: var(--ink); color: var(--cream); }
+
+    .hero-right { display: flex; flex-direction: column; gap: 1rem; }
+    .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .stat-box { background: var(--card); border: 1px solid var(--rule); padding: 1.5rem; border-radius: 4px; }
+    .stat-box.accent { background: var(--slate); border-color: var(--slate); }
+    .stat-box.accent .stat-n { color: #fff; }
+    .stat-box.accent .stat-n sup { color: rgba(255,255,255,0.5); }
+    .stat-box.accent .stat-l { color: rgba(255,255,255,0.6); }
+    .stat-n { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 600; line-height: 1; color: var(--ink); margin-bottom: 0.3rem; }
+    .stat-n sup { font-size: 1rem; color: var(--terracotta); vertical-align: super; }
+    .stat-l { font-size: 0.75rem; color: var(--ink2); text-transform: uppercase; letter-spacing: 0.08em; }
+    .chart-box { background: var(--card); border: 1px solid var(--rule); padding: 1.5rem; border-radius: 4px; }
+    .chart-box-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--ink2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 5rem; }
+    .container { max-width: 1280px; margin: 0 auto; }
+    .sec-kicker { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--terracotta); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sec-kicker::before { content:''; width:20px; height:1px; background: var(--terracotta); }
+    .sec-title { font-family: 'Fraunces', serif; font-size: clamp(1.9rem, 3vw, 3rem); font-weight: 300; letter-spacing: -0.02em; margin-bottom: 3rem; line-height: 1.1; }
+    .divider { border: none; border-top: 1px solid var(--rule); margin-bottom: 3rem; }
+
+    /* ── ABOUT ── */
+    #about { background: var(--cream); }
+    .about-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 6rem; align-items: start; }
+    .about-text p { font-size: 1.02rem; color: var(--ink2); line-height: 1.9; }
+    .about-text p + p { margin-top: 1.2rem; }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+    .edu-stack { display: flex; flex-direction: column; }
+    .edu-entry { padding: 1.2rem 0; border-bottom: 1px solid var(--rule); }
+    .edu-entry:first-child { border-top: 1px solid var(--rule); }
+    .edu-deg { font-weight: 500; font-size: 0.92rem; color: var(--ink); }
+    .edu-school { font-size: 0.85rem; color: var(--ink2); margin-top: 0.15rem; }
+    .edu-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--terracotta); margin-top: 0.3rem; }
+    .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 2rem; }
+    .cert-pill { background: var(--bg2); border: 1px solid var(--rule); border-radius: 2px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--ink); line-height: 1.4; }
+    .cert-pill span { display: block; font-size: 0.7rem; color: var(--ink2); margin-top: 0.2rem; }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--slate); }
+    #projects .sec-kicker { color: #C4A882; }
+    #projects .sec-kicker::before { background: #C4A882; }
+    #projects .sec-title { color: #F2EDE4; }
+    #projects .divider { border-color: rgba(255,255,255,0.1); }
+    .proj-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .proj-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px; padding: 2rem; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .proj-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(193,68,14,0.6); transform: translateY(-4px); }
+    .proj-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 0.12em; margin-bottom: 1rem; }
+    .proj-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 300; color: #F2EDE4; margin-bottom: 0.75rem; line-height: 1.25; }
+    .proj-desc { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.75; flex: 1; }
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.25rem; }
+    .proj-tag { font-size: 0.68rem; padding: 0.25rem 0.65rem; border-radius: 2px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.04em; }
+    .proj-impact { margin-top: 1.25rem; padding: 0.85rem 1rem; background: rgba(193,68,14,0.15); border-left: 2px solid var(--terracotta); border-radius: 0 2px 2px 0; }
+    .proj-impact-l { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
+    .proj-impact-v { font-size: 0.82rem; color: #F5D5C8; font-weight: 500; }
+    .proj-github { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1rem; font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+    .proj-github:hover { color: #F5D5C8; }
+    .proj-github svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* ── IMPACT CHARTS ── */
+    #impact { background: var(--bg2); }
+    .charts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .chart-card { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 1.75rem; }
+    .chart-card-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 300; color: var(--ink); margin-bottom: 0.3rem; }
+    .chart-card-sub { font-size: 0.78rem; color: var(--ink2); margin-bottom: 1.25rem; }
+
+    /* ── SKILLS ── */
+    .skills-wrap { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .skill-col { }
+    .skill-col-head { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--ink2); text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); margin-bottom: 0.75rem; }
+    .skill-item { font-size: 0.88rem; color: var(--ink); padding: 0.35rem 0; border-bottom: 1px solid var(--bg2); display: flex; align-items: center; gap: 0.5rem; }
+    .skill-item::before { content:''; width:4px; height:4px; border-radius:50%; background: var(--terracotta); flex-shrink: 0; }
+    .skill-item:last-child { border-bottom: none; }
+
+    /* ── EXPERIENCE ── */
+    #experience { background: var(--cream); }
+    .exp-entry { display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; padding: 2.5rem 0; border-bottom: 1px solid var(--rule); }
+    .exp-entry:first-child { border-top: 1px solid var(--rule); }
+    .exp-period { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--ink2); line-height: 1.7; }
+    .exp-co { font-weight: 500; font-size: 1rem; color: var(--ink); margin-bottom: 0.2rem; }
+    .exp-role { font-size: 0.85rem; color: var(--terracotta); font-weight: 500; margin-bottom: 0.75rem; }
+    .exp-ul { list-style: none; }
+    .exp-ul li { font-size: 0.88rem; color: var(--ink2); line-height: 1.75; padding: 0.2rem 0 0.2rem 1.25rem; position: relative; }
+    .exp-ul li::before { content:'—'; position:absolute; left:0; color: var(--rule); }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--terracotta); }
+    #contact .sec-kicker { color: rgba(255,255,255,0.6); }
+    #contact .sec-kicker::before { background: rgba(255,255,255,0.4); }
+    #contact .sec-title { color: #fff; }
+    #contact .divider { border-color: rgba(255,255,255,0.2); }
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .contact-desc { font-size: 1.05rem; color: rgba(255,255,255,0.85); line-height: 1.85; }
+    .contact-links { display: flex; flex-direction: column; gap: 0.85rem; }
+    .contact-link { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.4rem; background: rgba(255,255,255,0.12); border-radius: 2px; text-decoration: none; color: #fff; font-size: 0.9rem; font-weight: 400; transition: background 0.2s; }
+    .contact-link:hover { background: rgba(255,255,255,0.22); }
+    .contact-icon { width: 20px; text-align: center; font-size: 1rem; opacity: 0.7; }
+
+    footer { text-align: center; padding: 2rem; font-size: 0.78rem; color: var(--ink2); background: var(--bg); border-top: 1px solid var(--rule); }
+
+    /* ── MODAL ── */
+    .modal-wrap { display: none; position: fixed; inset: 0; background: rgba(20,16,12,0.8); z-index: 500; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(6px); }
+    .modal-wrap.open { display: flex; }
+    .modal-box { background: var(--slate); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; max-width: 680px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 2.5rem; position: relative; }
+    .modal-close { position: absolute; top: 1.25rem; right: 1.5rem; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.4rem; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 0.12em; margin-bottom: 0.5rem; }
+    .modal-title { font-family: 'Fraunces', serif; font-size: 1.75rem; font-weight: 300; color: #F2EDE4; margin-bottom: 0.4rem; }
+    .modal-co { font-size: 0.8rem; color: #C4A882; font-family: 'JetBrains Mono', monospace; margin-bottom: 1.25rem; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .modal-tag { font-size: 0.68rem; padding: 0.25rem 0.65rem; border-radius: 2px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+    .modal-head { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin: 1.5rem 0 0.6rem; }
+    .modal-body { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8; }
+    .modal-ul { list-style: none; }
+    .modal-ul li { font-size: 0.88rem; color: rgba(255,255,255,0.6); line-height: 1.75; padding: 0.25rem 0 0.25rem 1.2rem; position: relative; }
+    .modal-ul li::before { content:'→'; position:absolute; left:0; color: var(--terracotta); }
+    .modal-metrics { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .modal-metric { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.85rem 1.1rem; }
+    .modal-metric-n { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 300; color: #F5D5C8; }
+    .modal-metric-l { font-size: 0.68rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.15rem; }
+    .modal-gh-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; color: #F2EDE4; text-decoration: none; font-size: 0.82rem; transition: background 0.2s; }
+    .modal-gh-link:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 960px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero, .about-grid, .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      section { padding: 4rem 1.5rem; }
+      .proj-grid, .charts-grid, .skills-wrap { grid-template-columns: 1fr; }
+      .exp-entry { grid-template-columns: 1fr; gap: 0.75rem; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Aman Patel</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="reveal">
+    <div class="hero-kicker">Sr. Analyst · Customer Planning & Insights</div>
+    <h1 class="hero-name">Data that drives<br><strong>customer decisions.</strong></h1>
+    <p class="hero-sub">I'm Aman Patel — BI & Customer Analytics professional with 5+ years connecting data to strategy across American Express, Reebok, and Nidec. MBA, PMP, Six Sigma Black Belt.</p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-solid">See My Work</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+  <div class="reveal">
+    <div class="stat-row">
+      <div class="stat-box accent">
+        <div class="stat-n">$50B<sup>+</sup></div>
+        <div class="stat-l">Transactions analysed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-n">5<sup>+ yrs</sup></div>
+        <div class="stat-l">BI & analytics experience</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-n">70<sup>%</sup></div>
+        <div class="stat-l">Manual reporting cut</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-n">15<sup>+</sup></div>
+        <div class="stat-l">Exec dashboards shipped</div>
+      </div>
+    </div>
+    <div class="chart-box" style="margin-top:1rem;">
+      <div class="chart-box-label">CLV segment distribution — AmEx portfolio</div>
+      <canvas id="heroChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="sec-kicker reveal">About</div>
+    <h2 class="sec-title reveal">Background & credentials</h2>
+    <hr class="divider">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I specialise in <strong>customer segmentation, lifetime value analytics, CRM strategy, and campaign incrementality testing</strong> — work that sits at the intersection of data engineering and business strategy.</p>
+        <p>At American Express I worked across $50B+ in consumer credit card transactions, building the analytics infrastructure that VP-level teams used to make quarterly investment calls. At Reebok I delivered channel analytics that shaped seasonal planning. At Nidec I built global manufacturing KPI pipelines that replaced manual Excel processes organisation-wide.</p>
+        <p>I'm currently at Syracuse University as a BI Data Analyst, and targeting <strong>Senior Analyst, Customer Planning & Insights</strong> roles where I can drive customer strategy at scale.</p>
+      </div>
+      <div class="reveal">
+        <div class="edu-stack">
+          <div class="edu-entry">
+            <div class="edu-deg">MBA — Business Analytics & Supply Chain</div>
+            <div class="edu-school">Syracuse University, Whitman School of Management</div>
+            <div class="edu-meta">Aug 2022 – May 2024 · Syracuse, NY</div>
+          </div>
+          <div class="edu-entry">
+            <div class="edu-deg">B.E. — Petroleum Engineering</div>
+            <div class="edu-school">Savitribai Phule Pune University</div>
+            <div class="edu-meta">July 2015 – May 2019 · Pune, India</div>
+          </div>
+        </div>
+        <div class="cert-grid">
+          <div class="cert-pill">Project Management Professional (PMP)<span>Project Management Institute</span></div>
+          <div class="cert-pill">Lean Six Sigma Black Belt<span>CSSC</span></div>
+          <div class="cert-pill">Google Data Analytics<span>Google</span></div>
+          <div class="cert-pill">Alteryx Designer Core<span>Alteryx</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="sec-kicker reveal">Selected work</div>
+    <h2 class="sec-title reveal">Projects — <span style="font-family:'DM Sans';font-size:0.9rem;font-weight:300;opacity:0.5;">click any card to explore</span></h2>
+    <hr class="divider">
+    <div class="proj-grid">
+
+      <div class="proj-card reveal" onclick="openModal('clv')">
+        <div class="proj-num">01 · Customer Segmentation</div>
+        <h3 class="proj-title">Customer Lifetime Value Segmentation</h3>
+        <p class="proj-desc">End-to-end CLV model across $50B+ in AmEx transactions — moving beyond spend tiers to identify who's actually worth investing in.</p>
+        <div class="proj-tags"><span class="proj-tag">SQL</span><span class="proj-tag">Python</span><span class="proj-tag">Tableau</span><span class="proj-tag">Snowflake</span></div>
+        <div class="proj-impact"><div class="proj-impact-l">Key impact</div><div class="proj-impact-v">Drove VP-level quarterly investment decisions</div></div>
+        <a href="https://github.com/aman-analytics/customer-lifetime-value-segmentation" target="_blank" class="proj-github" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="proj-card reveal" onclick="openModal('inc')">
+        <div class="proj-num">02 · Campaign Analytics</div>
+        <h3 class="proj-title">Offer Incrementality & A/B Testing</h3>
+        <p class="proj-desc">A reusable framework that separates genuine campaign lift from customers who were going to buy anyway — saving budgets and improving targeting.</p>
+        <div class="proj-tags"><span class="proj-tag">A/B Testing</span><span class="proj-tag">Python</span><span class="proj-tag">SQL</span><span class="proj-tag">SciPy</span></div>
+        <div class="proj-impact"><div class="proj-impact-l">Key impact</div><div class="proj-impact-v">+15% promotional ROI at Reebok</div></div>
+        <a href="https://github.com/aman-analytics/offer-incrementality-testing" target="_blank" class="proj-github" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="proj-card reveal" onclick="openModal('cc')">
+        <div class="proj-num">03 · Spend Analytics</div>
+        <h3 class="proj-title">Credit Card Spend Analytics Dashboard</h3>
+        <p class="proj-desc">Category spend trends, activation performance by channel, and rewards liability tracking — built to replace fragmented manual reports with a daily-refreshed Tableau suite.</p>
+        <div class="proj-tags"><span class="proj-tag">Tableau</span><span class="proj-tag">SQL</span><span class="proj-tag">Power BI</span><span class="proj-tag">Snowflake</span></div>
+        <div class="proj-impact"><div class="proj-impact-l">Key impact</div><div class="proj-impact-v">$15M fraud/risk exposure uncovered annually</div></div>
+        <a href="https://github.com/aman-analytics/executive-bi-dashboard-suite" target="_blank" class="proj-github" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT CHARTS -->
+<section id="impact">
+  <div class="container">
+    <div class="sec-kicker reveal">By the numbers</div>
+    <h2 class="sec-title reveal">Measurable impact</h2>
+    <hr class="divider">
+    <div class="charts-grid">
+      <div class="chart-card reveal">
+        <div class="chart-card-title">Reporting time saved</div>
+        <div class="chart-card-sub">Manual hours eliminated per week across roles</div>
+        <canvas id="chart1" height="180"></canvas>
+      </div>
+      <div class="chart-card reveal">
+        <div class="chart-card-title">Campaign ROI — before vs after</div>
+        <div class="chart-card-sub">Incrementality testing results across campaigns</div>
+        <canvas id="chart2" height="180"></canvas>
+      </div>
+      <div class="chart-card reveal">
+        <div class="chart-card-title">CLV segment spend profile</div>
+        <div class="chart-card-sub">Avg monthly spend by customer tier</div>
+        <canvas id="chart3" height="180"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="sec-kicker reveal">Capabilities</div>
+    <h2 class="sec-title reveal">Technical skills</h2>
+    <hr class="divider">
+    <div class="skills-wrap reveal">
+      <div class="skill-col">
+        <div class="skill-col-head">BI & Visualisation</div>
+        <div class="skill-item">Tableau & Tableau Prep</div>
+        <div class="skill-item">Power BI</div>
+        <div class="skill-item">Alteryx</div>
+        <div class="skill-item">Adobe Analytics</div>
+      </div>
+      <div class="skill-col">
+        <div class="skill-col-head">Databases & ETL</div>
+        <div class="skill-item">SQL Server / SSMS</div>
+        <div class="skill-item">Snowflake</div>
+        <div class="skill-item">Excel Power Query</div>
+        <div class="skill-item">Advanced Excel</div>
+      </div>
+      <div class="skill-col">
+        <div class="skill-col-head">Analytics & Testing</div>
+        <div class="skill-item">Customer Segmentation</div>
+        <div class="skill-item">Lifetime Value (CLV)</div>
+        <div class="skill-item">A/B & Incrementality</div>
+        <div class="skill-item">Forecasting</div>
+        <div class="skill-item">KPI Scorecards</div>
+      </div>
+      <div class="skill-col">
+        <div class="skill-col-head">Programming & Other</div>
+        <div class="skill-item">Python (Pandas, NumPy)</div>
+        <div class="skill-item">R (basic)</div>
+        <div class="skill-item">Agile / Scrum</div>
+        <div class="skill-item">GitHub</div>
+        <div class="skill-item">Stakeholder Workshops</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="sec-kicker reveal">Career</div>
+    <h2 class="sec-title reveal">Work experience</h2>
+    <hr class="divider">
+
+    <div class="exp-entry reveal">
+      <div class="exp-period">July 2024 — Present</div>
+      <div>
+        <div class="exp-co">Syracuse University</div>
+        <div class="exp-role">Business Intelligence Data Analyst · New York, NY</div>
+        <ul class="exp-ul">
+          <li>Developed 15+ Tableau dashboards for housing, dining, and financial reporting, improving executive decision-making efficiency by 40%.</li>
+          <li>Built SQL pipelines integrating Simphony POS, StarRez, and Safety systems for real-time KPI monitoring.</li>
+          <li>Automated reports reducing manual reporting time by 60% and partnered with leadership on KPI scorecard design.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-entry reveal">
+      <div class="exp-period">May 2023 — May 2024</div>
+      <div>
+        <div class="exp-co">Nidec Motor Corporation</div>
+        <div class="exp-role">Data Analytics Consultant · Remote</div>
+        <ul class="exp-ul">
+          <li>Designed Tableau dashboards monitoring global manufacturing KPIs across multiple plants.</li>
+          <li>Consolidated SQL datasets into a unified reporting system, eliminating 70% of manual Excel work.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-entry reveal">
+      <div class="exp-period">Aug 2022 — May 2023</div>
+      <div>
+        <div class="exp-co">Reebok</div>
+        <div class="exp-role">Retail Analytics Consultant · Remote</div>
+        <ul class="exp-ul">
+          <li>Delivered customer segmentation and CLV analytics across digital and in-store channels.</li>
+          <li>Ran incrementality tests on promotional campaigns, improving ROI by 15% through sharper targeting.</li>
+          <li>Built Power BI dashboards tracking sales, inventory, and campaign performance across regions.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-entry reveal">
+      <div class="exp-period">May 2019 — Aug 2022</div>
+      <div>
+        <div class="exp-co">American Express</div>
+        <div class="exp-role">Business Intelligence Analyst · New York, NY</div>
+        <ul class="exp-ul">
+          <li>Delivered CLV segmentation, file health reporting, and spend analytics across $50B+ in credit card transactions.</li>
+          <li>Engineered SQL pipelines combining cardholder, merchant, and risk data — reducing manual reporting by 70%.</li>
+          <li>Designed KPI scorecards uncovering $15M in annual fraud/risk exposure savings.</li>
+          <li>Supported incrementality testing and CRM offer strategy, presenting quarterly findings to VP leadership.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="sec-kicker reveal">Let's talk</div>
+    <h2 class="sec-title reveal">Get in touch</h2>
+    <hr class="divider">
+    <div class="contact-wrap">
+      <p class="contact-desc reveal">Open to <strong>Senior Analyst, Customer Planning & Insights</strong> roles. I bring 5+ years of proven impact in CLV analytics, CRM strategy, and campaign testing — plus an MBA, PMP, and Six Sigma Black Belt.</p>
+      <div class="contact-links reveal">
+        <a href="mailto:amanpatel028@gmail.com" class="contact-link"><span class="contact-icon">✉</span> amanpatel028@gmail.com</a>
+        <a href="https://linkedin.com/in/amanpatel028" target="_blank" class="contact-link"><span class="contact-icon">in</span> linkedin.com/in/amanpatel028</a>
+        <a href="https://github.com/aman-analytics" target="_blank" class="contact-link"><span class="contact-icon">⌥</span> github.com/aman-analytics</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Aman Patel · Built with HTML · Hosted on GitHub Pages · © 2026</footer>
+
+<!-- MODAL -->
+<div class="modal-wrap" id="mw" onclick="closeMod(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModDirect()">✕</button>
+    <div id="mc"></div>
+  </div>
+</div>
+
+<script>
+const TERRA = '#C1440E', SLATE = '#2D3B4E', RULE = '#D6CFC3', INK2 = '#57534E';
+
+/* ── HERO DOUGHNUT ── */
+new Chart(document.getElementById('heroChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Champions','Loyal','Potential','At Risk','Dormant'],
+    datasets: [{ data: [12,23,31,22,12], backgroundColor: ['#C1440E','#2D3B4E','#8B5E3C','#C4A882','#D6CFC3'], borderWidth: 2, borderColor: '#FAF8F4' }]
+  },
+  options: {
+    cutout: '55%',
+    layout: { padding: 28 },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } },
+      datalabels: {
+        display: true,
+        formatter: (val, ctx) => ctx.chart.data.labels[ctx.dataIndex] + '\n' + val + '%',
+        color: '#fff',
+        font: { size: 10, weight: '500', family: 'DM Sans' },
+        textAlign: 'center',
+        anchor: 'center',
+        align: 'center',
+      }
+    }
+  },
+  plugins: [{
+    id: 'outerLabels',
+    afterDraw(chart) {
+      const { ctx, chartArea: { width, height } } = chart;
+      const cx = width / 2 + chart.chartArea.left;
+      const cy = height / 2 + chart.chartArea.top;
+      const meta = chart.getDatasetMeta(0);
+      const colors = ['#C1440E','#2D3B4E','#8B5E3C','#9A7B5A','#A89F95'];
+      const labels = ['Champions','Loyal','Potential','At Risk','Dormant'];
+      const vals   = [12,23,31,22,12];
+      meta.data.forEach((arc, i) => {
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const r = arc.outerRadius * 0.72;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff';
+        ctx.font = '500 10px DM Sans';
+        ctx.fillText(labels[i], x, y - 6);
+        ctx.font = '400 11px DM Sans';
+        ctx.fillText(vals[i] + '%', x, y + 7);
+        ctx.restore();
+      });
+    }
+  }]
+});
+
+/* ── CHART 1: Reporting time saved ── */
+new Chart(document.getElementById('chart1'), {
+  type: 'bar',
+  data: {
+    labels: ['AmEx','Nidec','Reebok','Syracuse'],
+    datasets: [{ label: 'Hours saved/week', data: [14,12,8,9], backgroundColor: TERRA, borderRadius: 2 }]
+  },
+  options: { plugins:{legend:{display:false}}, scales: { y:{grid:{color:'#f0ede7'}, ticks:{color:INK2,font:{size:11}}}, x:{grid:{display:false}, ticks:{color:INK2,font:{size:11}}} } }
+});
+
+/* ── CHART 2: ROI before/after ── */
+new Chart(document.getElementById('chart2'), {
+  type: 'bar',
+  data: {
+    labels: ['Dining\nCashback','Seasonal\nPromo','Loyalty\nBonus','New\nArrival'],
+    datasets: [
+      { label: 'Apparent ROI %', data: [22,18,31,14], backgroundColor: RULE, borderRadius: 2 },
+      { label: 'Incremental ROI %', data: [38,33,41,21], backgroundColor: SLATE, borderRadius: 2 }
+    ]
+  },
+  options: { plugins:{legend:{labels:{font:{size:11},color:INK2,boxWidth:10}}}, scales: { y:{grid:{color:'#f0ede7'}, ticks:{color:INK2,font:{size:11},callback:v=>v+'%'}}, x:{grid:{display:false}, ticks:{color:INK2,font:{size:11}}} } }
+});
+
+/* ── CHART 3: CLV spend by tier ── */
+new Chart(document.getElementById('chart3'), {
+  type: 'bar',
+  data: {
+    labels: ['Champions','Loyal','Potential','At Risk','Dormant'],
+    datasets: [{ label: 'Avg monthly spend', data: [4200,2100,980,560,120], backgroundColor: ['#C1440E','#2D3B4E','#8B5E3C','#C4A882','#D6CFC3'], borderRadius: 2 }]
+  },
+  options: { plugins:{legend:{display:false}}, scales: { y:{grid:{color:'#f0ede7'}, ticks:{color:INK2,font:{size:11},callback:v=>'$'+v.toLocaleString()}}, x:{grid:{display:false}, ticks:{color:INK2,font:{size:11}}} } }
+});
+
+/* ── MODALS ── */
+const modals = {
+  clv: {
+    num:'01 · Customer Segmentation', title:'Customer Lifetime Value Segmentation', co:'American Express · 2019–2022',
+    tags:['SQL','Python','Tableau','Snowflake','Pandas','K-Means'],
+    overview:'Built an end-to-end CLV segmentation framework on 3 years of AmEx cardholder data. The insight that changed everything: redemption rate was a stronger predictor of long-term retention than raw spend.',
+    approach:['Pulled spend, rewards, activation data via SQL across Snowflake','Engineered features: avg monthly spend, redemption rate, spend consistency, activation lag','Applied K-Means clustering (5 tiers) in Python / scikit-learn','Built Tableau dashboards with drill-downs by segment, region, card product','Partnered with Finance and CRM to map segments to investment thresholds'],
+    metrics:[{n:'$50B+',l:'Transactions'},{n:'5',l:'Segments'},{n:'40%',l:'More budget to Potential tier'}],
+    outcome:'Segmentation adopted into quarterly VP investment planning. Acquisition budget rebalanced, redemption nudge campaign launched for At Risk tier.',
+    gh:'https://github.com/aman-analytics/customer-lifetime-value-segmentation'
+  },
+  inc: {
+    num:'02 · Campaign Analytics', title:'Offer Incrementality & A/B Testing', co:'American Express & Reebok · 2019–2023',
+    tags:['A/B Testing','Python','SciPy','SQL','Excel','CRM'],
+    overview:"Most campaign reports measure response rate — which includes people who were already going to buy. This framework finds the true causal lift by comparing matched test and holdout groups.",
+    approach:['Stratified random splits to ensure comparable baseline spend across test and holdout','Defined incrementality metrics: lift %, incremental responders, cost per incremental unit','Built statistical significance testing using SciPy t-tests','Delivered findings in exec-ready reports with clear investment recommendations','Saved the Reebok seasonal promo from being cut — incrementality showed strong hidden lift'],
+    metrics:[{n:'+15%',l:'Promo ROI (Reebok)'},{n:'4',l:'Campaigns analysed'},{n:'p<0.05',l:'Significance threshold'}],
+    outcome:'CRM targeting refined at both AmEx and Reebok. The seasonal promo that looked mediocre on surface metrics was proven to have the strongest true lift.',
+    gh:'https://github.com/aman-analytics/offer-incrementality-testing'
+  },
+  cc: {
+    num:'03 · Spend Analytics', title:'Credit Card Spend Analytics Dashboard', co:'American Express · 2019–2022',
+    tags:['Tableau','SQL','Power BI','Snowflake','Risk Analytics'],
+    overview:'A daily-refreshed analytics suite covering spend category trends, activation performance by channel, and rewards liability tracking — replacing fragmented manual Excel pulls.',
+    approach:['SQL pipelines joining cardholder, merchant, transaction, and rewards data in Snowflake','Spend category tracking by MCC group with QoQ trend views','Activation rate analysis by channel — found direct mail activating 11 days slower than digital','Rewards liability dashboard flagging cohorts with low redemption (early churn signal)','KPI scorecards presented quarterly to VP Risk and Finance leadership'],
+    metrics:[{n:'$15M',l:'Risk exposure found'},{n:'70%',l:'Manual reporting cut'},{n:'VP',l:'Quarterly audience'}],
+    outcome:'Scorecards became the primary risk monitoring tool for VP quarterly reviews. Activation lag finding led to a simple fix (earlier welcome email) that improved activation rate 8%.',
+    gh:'https://github.com/aman-analytics/executive-bi-dashboard-suite'
+  }
+};
+
+function openModal(id) {
+  const p = modals[id];
+  document.getElementById('mc').innerHTML = `
+    <div class="modal-num">${p.num}</div>
+    <h2 class="modal-title">${p.title}</h2>
+    <div class="modal-co">${p.co}</div>
+    <div class="modal-tags">${p.tags.map(t=>`<span class="modal-tag">${t}</span>`).join('')}</div>
+    <div class="modal-head">Overview</div>
+    <p class="modal-body">${p.overview}</p>
+    <div class="modal-head">Approach</div>
+    <ul class="modal-ul">${p.approach.map(a=>`<li>${a}</li>`).join('')}</ul>
+    <div class="modal-head">Key metrics</div>
+    <div class="modal-metrics">${p.metrics.map(m=>`<div class="modal-metric"><div class="modal-metric-n">${m.n}</div><div class="modal-metric-l">${m.l}</div></div>`).join('')}</div>
+    <div class="modal-head">Outcome</div>
+    <p class="modal-body">${p.outcome}</p>
+    <a href="${p.gh}" target="_blank" class="modal-gh-link">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View full project on GitHub
+    </a>`;
+  document.getElementById('mw').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMod(e) { if (e.target === document.getElementById('mw')) closeModDirect(); }
+function closeModDirect() { document.getElementById('mw').classList.remove('open'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModDirect(); });
+
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
